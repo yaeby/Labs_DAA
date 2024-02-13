@@ -4,17 +4,17 @@ import sys
 
 sys.setrecursionlimit(10**6)
 
-FibArray = [0, 1]
-def Fibonacci(n):
+def Fibonacci(n, memo=None):
+    if memo is None:
+        memo = {}
+    if n in memo:
+        return memo[n]
 
-	if n < 0:
-		print("Incorrect input")
-		
-	elif n < len(FibArray):
-		return FibArray[n]
-	else:	 
-		FibArray.append(Fibonacci(n - 1) + Fibonacci(n - 2))
-		return FibArray[n]
+    memo[0], memo[1] = 0, 1
+    for i in range(2, n + 1):
+        memo[i] = memo[i - 1] + memo[i - 2]
+
+    return memo[n]
 
 #Here I store the results
 data = []
@@ -31,9 +31,7 @@ for term in terms:
     execution_times.append(execution_time)
     
     data.append(result)
-    #print(f"Term {term}: Fibonacci({term}) = {result}, Time: {execution_time:.6f} seconds")
-
-#print(data)
+    print(f"Fibonacci({term}): {execution_time:.6f} seconds")
 
 plt.plot(terms, execution_times, 'o-', linewidth=0.5)
 plt.xlabel('Fibonacci Term')

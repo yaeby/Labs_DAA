@@ -1,38 +1,17 @@
 import matplotlib.pyplot as plt
 import time
-import sys
 
-sys.setrecursionlimit(10**6)
-
-# Function for nth fibonacci number 
 def Fibonacci(n):
-	a = 0
-	b = 1
-	
-	# Check is n is less
-	# than 0
-	if n < 0:
-		print("Incorrect input")
-		
-	# Check is n is equal
-	# to 0
-	elif n == 0:
-		return 0
-	
-	# Check if n is equal to 1
-	elif n == 1:
-		return b
-	else:
-		for i in range(1, n):
-			c = a + b
-			a = b
-			b = c
-		return b
+    if n <= 1:
+        return n
+    else:
+        return Fibonacci(n-1) + Fibonacci(n-2)
 
 #Here I store the results
 data = []
 execution_times = []
-terms=[501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000, 12589, 15849]
+terms=[5, 7, 10, 12, 15, 17, 20,
+22, 25, 27, 30, 32, 35, 37, 40, 42, 45]
 
 # Driver Program
 for term in terms:
@@ -44,8 +23,7 @@ for term in terms:
     execution_times.append(execution_time)
     
     data.append(result)
-    print(f"Fibonacci({term}), Time: {execution_time:.6f} seconds")
-
+    print(f"Fibonacci({term}): {execution_time:.6f} seconds")
 
 plt.plot(terms, execution_times, 'o-', linewidth=0.5)
 plt.xlabel('Fibonacci Term')
