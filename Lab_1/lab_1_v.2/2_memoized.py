@@ -1,23 +1,26 @@
 import matplotlib.pyplot as plt
 import time
+from functools import lru_cache
+import sys
 
-def Fibonacci(n):
-    if n <= 1:
+sys.setrecursionlimit(10**8)
+
+@lru_cache(100)
+def memoized_fib(n):
+    if n < 2:
         return n
-    a, b = 0, 1
-    for i in range(n):
-        a, b = b, a + b
-    return a
+    else:
+        return memoized_fib(n-1) + memoized_fib(n-2)
 
 #Here I store the results
 data = []
 execution_times = []
-terms=[501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000, 12589, 15849]
+terms=[501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000]
 
 # Driver Program
 for term in terms:
     start_time = time.time()
-    result = Fibonacci(term)
+    result = memoized_fib(term)
     end_time = time.time()
     
     execution_time = end_time - start_time

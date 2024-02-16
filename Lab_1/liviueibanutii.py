@@ -7,72 +7,53 @@ import numpy as np
 
 sys.setrecursionlimit(10**6)
 
+'''
+Fibonacci functions
+'''
 
 # 1. Recursive approach
-def fibonacci_recursive(n):
+def recusive_fib(n):
     if n <= 1:
         return n
     else:
-        return fibonacci_recursive(n-1) + fibonacci_recursive(n-2)
+        return recusive_fib(n-1) + recusive_fib(n-2)
 
 
-# 2. Memoization (Dynamic Programming) approach
-def fibonacci_memoization(n, memo=None):
-    if memo is None:
-        memo = {}
-    if n in memo:
-        return memo[n]
+# 2. Dynamic Programming approach (with memoization)
+def dynamic_fib(n, storage=None):
+    if storage is None:
+        storage = {}
+    if n in storage:
+        return storage[n]
 
-    memo[0], memo[1] = 0, 1
+    storage[0], storage[1] = 0, 1
     for i in range(2, n + 1):
-        memo[i] = memo[i - 1] + memo[i - 2]
+        storage[i] = storage[i - 1] + storage[i - 2]
+    return storage[n]
 
-    return memo[n]
 
-
-# 3. Iterative approach
-def fibonacci_iterative(n):
-    if n <= 1:
+# 3. Tabular approach
+def table_fib(n):
+    if n < 2:
         return n
-    a, b = 0, 1
-    for _ in range(n):
-        a, b = b, a + b
-    return a
+    table = [-1] * (n+1)
+    table[0] = 0
+    table[1] = 1
+    for i in range(2, n+1):
+        table[i] = table[i-1] + table[i-2]
+    return table[n]
 
 
-# 4. Matrix Exponentiation approach
-def fibonacci_matrix(n):
-    def multiply(matrix1, matrix2):
-        return [[matrix1[0][0]*matrix2[0][0] + matrix1[0][1]*matrix2[1][0], matrix1[0][0]*matrix2[0][1] + matrix1[0][1]*matrix2[1][1]],
-                [matrix1[1][0]*matrix2[0][0] + matrix1[1][1]*matrix2[1][0], matrix1[1][0]*matrix2[0][1] + matrix1[1][1]*matrix2[1][1]]]
-
-    def power(matrix, n):
-        if n <= 1:
-            return matrix
-        result = power(matrix, n//2)
-        result = multiply(result, result)
-        if n % 2 == 1:
-            result = multiply(result, [[1, 1], [1, 0]])
-        return result
-
-    if n == 0:
-        return 0
-    result_matrix = power([[1, 1], [1, 0]], n-1)
-    return result_matrix[0][0]
+# 4. Iterative approach
+def iterative_fib(n):
+    previous, current = (0, 1)
+    for i in range(2, n+1):
+        previous, current = (current, previous + current)
+    return current
 
 
-# 5. Binet's Formula approach
-def fibonacci_binet(n):
-    decimal.getcontext().prec = 2 * n + 1  # Set precision to handle large numbers
-
-    sqrt_5 = decimal.Decimal(math.sqrt(5))
-    phi = (1 + sqrt_5) / 2
-    fib_n = ( phi * n - (-1 / phi) * n) / sqrt_5
-    return round(fib_n)
-
-
-# 6. Using Fibonacci sequence properties
-def fibonacci_properties(n):
+# 5. Fibonacci sequence properties approach
+def properties_fib(n):
     if n <= 1:
         return n
     else:
@@ -82,6 +63,71 @@ def fibonacci_properties(n):
         return fib[-1]
 
 
+# 6. Eigenvalue approach
+def eigen_fib(n, mod=10**9 + 7):
+    def mod_pow(base, exp, mod):
+        result = 1
+        base = base % mod
+        while exp > 0:
+            if exp % 2 == 1:
+                result = (result * base) % mod
+            exp = exp // 2
+            base = (base * base) % mod
+        return result
+
+    F1 = np.array([[1, 1], [1, 0]])
+    eigenvalues, eigenvectors = np.linalg.eig(F1)
+    
+    # Use modular exponentiation to prevent overflow
+    Fn = eigenvectors @ np.diag([mod_pow(eig, n, mod) for eig in eigenvalues]) @ eigenvectors.T
+    
+    return int(np.rint(Fn[0, 1])) % mod
+
+
+# 7. Matrix approach
+def multiply(a, b, x, y):
+    return x*(a+b) + a*y, a*x + b*y
+
+def square(a, b):
+    a2 = a * a
+    b2 = b * b
+    ab = a * b
+    return a2 + (ab << 1), a2 + b2
+
+def power(a, b, m):
+    if m == 0:
+        return (0, 1)
+    elif m == 1:
+        return (a, b)
+    else:
+        x, y = a, b
+        n = 2
+        while n <= m:
+            # repeated square until n = 2^q > m
+            x, y = square(x, y)
+            n = n*2
+        # add on the remainder
+        a, b = power(a, b, m-n//2)
+        return multiply(x, y, a, b)
+
+def matrix_fib(n):
+    a, b = power(1, 0, n)
+    return a
+
+    
+# 8. Binet's Formula approach
+def binet_fib(n):
+    decimal.getcontext().prec = 2 * n + 1  # Set precision to handle large numbers
+
+    sqrt_5 = decimal.Decimal(math.sqrt(5))
+    phi = (1 + sqrt_5) / 2
+    fib_n = ( phi * n - (-1 / phi) * n) / sqrt_5
+    return round(fib_n)
+
+
+'''
+Recordings
+'''
 # Function to measure elapsed time for a function call
 def measure_time(func, n):
     start_time = time.time()
@@ -92,18 +138,18 @@ def measure_time(func, n):
 
 
 # Define the series of Fibonacci terms to be looked up
-series_1_raw = np.random.randint(1, 45, size=35)
+series_1_raw = np.random.randint(1, 45, size=1)
 series_1 = np.sort(series_1_raw)
 
 series_2_raw = np.random.randint(1, 50001, size=40)
 series_2 = np.sort(series_2_raw)
 
 
-func_names = {fibonacci_memoization, fibonacci_iterative, fibonacci_matrix, fibonacci_binet, fibonacci_properties, fibonacci_recursive}
+func_names = [recusive_fib, dynamic_fib, table_fib, iterative_fib, properties_fib, eigen_fib, matrix_fib, binet_fib]
 for func in func_names:
     x_values = []
     y_values = []
-    if func != fibonacci_recursive:
+    if func != recusive_fib:
         for n in series_2:
             elapsed_time = measure_time(func, int(n))
             x_values.append(n)
@@ -115,25 +161,24 @@ for func in func_names:
             y_values.append(elapsed_time)
 
     # Create the table
-    fig, ax = plt.subplots(figsize=(9, 10.5))
+    fig, ax = plt.subplots(figsize=(6, 9))
     table_data = np.row_stack((x_values, y_values))  # Combine x and y into a 2D array with rows
-    table = ax.table(cellText=table_data.T, colLabels=['n', 'Time (seconds)'], loc='center', cellLoc='left')
+    table = ax.table(cellText=table_data.T, colLabels=['n-th Fibonacci termen', 'Time (s)'], loc='center', cellLoc='left')
 
     # Set the table formatting
     table.auto_set_font_size(False)
-    table.set_fontsize(8)
-    table.scale(1, 1.2)
+    table.set_fontsize(10)
+    table.scale(1, 1)
     ax.axis('off')
-    ax.set_title(f'Table for the {func.__name__} method')
+    ax.set_title(f'Time result of {func.__name__} function')
 
     # Display the table
     plt.show()
 
     # Plot the graph
-    plt.figure(figsize=(8, 5))
-    plt.plot(x_values, y_values, marker='o')
-    plt.xlabel('Fibonacci n-th term')
-    plt.ylabel('Time (seconds)')
-    plt.title(f'Dependency of Fibonacci n-th term on Time for the {func.__name__} method')
-    plt.grid(True)
+    plt.figure(figsize=(9, 6))
+    plt.plot(x_values, y_values, 'o-')
+    plt.xlabel('n-th Fibonacci Term')
+    plt.ylabel('Time (s)')
+    plt.title(f'{func.__name__} function')
     plt.show()

@@ -1,13 +1,18 @@
 import matplotlib.pyplot as plt
 import time
+import sys
 
-def Fibonacci(n):
-    if n <= 1:
+sys.setrecursionlimit(10**8)
+
+def table_fib(n):
+    if n < 2:
         return n
-    a, b = 0, 1
-    for i in range(n):
-        a, b = b, a + b
-    return a
+    table = [-1] * (n+1)
+    table[0] = 0
+    table[1] = 1
+    for i in range(2, n+1):
+        table[i] = table[i-1] + table[i-2]
+    return table[n]
 
 #Here I store the results
 data = []
@@ -17,7 +22,7 @@ terms=[501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943
 # Driver Program
 for term in terms:
     start_time = time.time()
-    result = Fibonacci(term)
+    result = table_fib(term)
     end_time = time.time()
     
     execution_time = end_time - start_time

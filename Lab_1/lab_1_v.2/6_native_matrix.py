@@ -1,13 +1,31 @@
 import matplotlib.pyplot as plt
 import time
 
-def Fibonacci(n):
-    if n <= 1:
-        return n
-    a, b = 0, 1
-    for i in range(n):
-        a, b = b, a + b
-    return a
+def matrix_multiply(A, B):
+    a, b, c, d = A
+    x, y, z, w = B
+    
+    return (
+        a*x + b*z,
+        a*y + b*w,
+        c*x + d*z,
+        c*y + d*w,
+    )
+
+def naive_matrix_power(A, m):
+    if m == 0:
+        return [1, 0, 0, 1]
+    B = A
+    for _ in range(m-1):
+        B = matrix_multiply(B, A)
+    return B
+
+F1 = [1, 1, 
+      1, 0]
+
+def naive_matrix_fib(n):
+    return naive_matrix_power(F1, n)[1]
+
 
 #Here I store the results
 data = []
@@ -17,7 +35,7 @@ terms=[501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943
 # Driver Program
 for term in terms:
     start_time = time.time()
-    result = Fibonacci(term)
+    result = naive_matrix_fib(term)
     end_time = time.time()
     
     execution_time = end_time - start_time
@@ -25,7 +43,6 @@ for term in terms:
     
     data.append(result)
     print(f"Fibonacci({term}): {execution_time:.6f} seconds")
-
 
 plt.plot(terms, execution_times, 'o-', linewidth=0.5)
 plt.xlabel('Fibonacci Term')
