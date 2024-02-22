@@ -141,7 +141,7 @@ def measure_time(func, n):
 series_1_raw = np.random.randint(1, 45, size=1)
 series_1 = np.sort(series_1_raw)
 
-series_2_raw = np.random.randint(1, 50001, size=40)
+series_2_raw = np.random.randint(1, 70001, size=40)
 series_2 = np.sort(series_2_raw)
 
 
