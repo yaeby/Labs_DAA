@@ -1,5 +1,6 @@
 from random import randint
 from timeit import repeat
+from matplotlib import pyplot as plt
 
 
 def bubble_sort(array):
@@ -205,26 +206,43 @@ def run_sorting_algorithm(algorithm, array):
     #
     print(times)
 
-    final_times=[]
-    for time in times:
-        final_times.append(round(time, 6))
+    # final_times=[]
+    # for time in times:
+    #     final_times.append(round(time, 6))
 
-    print(f"Algorithm: {algorithm}. Array lenght: {len(array)}. Minimum execution time: {min(final_times)} sec")
+    final_time = round(min(times), 6)
+
+    print(f"Algorithm: {algorithm}. Array lenght: {len(array)}. Minimum execution time: {final_time} sec")
     print("")
+    
+def plot(times, array_len):
+    plt.plot(array_len, times, 'o-')
+    plt.xlabel("Array's lenght")
+    plt.ylabel("Time (s)")
+    plt.show()
 
-ARRAY_LENGTH = 1000
+
+ARRAY_LENGTH = 0
 
 if __name__ == "__main__":
-    # Generate an array of `ARRAY_LENGTH` items consisting
-    # of random integer values between 0 and 999
-    array = [randint(0, 1000) for i in range(ARRAY_LENGTH)]
-    # array = [i for i in range(ARRAY_LENGTH)]
+   
+    for i in range(0, 10):
+        ARRAY_LENGTH += 100
+        array_len = []
+        array_len.append(ARRAY_LENGTH)
+        array = [randint(-1000, 1000) for j in range(ARRAY_LENGTH)]
+        # print(ARRAY_LENGTH)
+        # print(array)
+
+        run_sorting_algorithm(algorithm="insertion_sort", array=array)
+        run_sorting_algorithm(algorithm="merge_sort", array=array)
+        run_sorting_algorithm(algorithm="quicksort", array=array)
  
     # Call the function using the name of the sorting algorithm
     # and the array you just created
     #run_sorting_algorithm(algorithm="sorted", array=array)
     #run_sorting_algorithm(algorithm="bubble_sort", array=array)
-    run_sorting_algorithm(algorithm="insertion_sort", array=array)
-    run_sorting_algorithm(algorithm="merge_sort", array=array)
-    run_sorting_algorithm(algorithm="quicksort", array=array)
+    # run_sorting_algorithm(algorithm="insertion_sort", array=array)
+    # run_sorting_algorithm(algorithm="merge_sort", array=array)
+    # run_sorting_algorithm(algorithm="quicksort", array=array)
     # run_sorting_algorithm(algorithm="timsort", array=array)
