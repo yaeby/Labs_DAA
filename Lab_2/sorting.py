@@ -1,6 +1,7 @@
 from random import randint
 from timeit import repeat
 from matplotlib import pyplot as plt
+import numpy as np
 
 
 def bubble_sort(array):
@@ -193,7 +194,7 @@ def run_sorting_algorithm(algorithm, array):
     # algorithm using the supplied array. Only import the
     # algorithm function if it's not the built-in `sorted()`.
     setup_code = f"from __main__ import {algorithm}" \
-        #if algorithm != "sorted" else ""
+        if algorithm != "sorted" else ""
 
     stmt = f"{algorithm}({array})"
 
@@ -203,46 +204,45 @@ def run_sorting_algorithm(algorithm, array):
 
     # Finally, display the name of the algorithm and the
     # minimum time it took to run
-    #
-    print(times)
-
-    # final_times=[]
-    # for time in times:
-    #     final_times.append(round(time, 6))
-
     final_time = round(min(times), 6)
 
     print(f"Algorithm: {algorithm}. Array lenght: {len(array)}. Minimum execution time: {final_time} sec")
     print("")
+    return final_time
     
-def plot(times, array_len):
+def plot(times, array_len, algorithm):
+
+    fig, ax = plt.subplots()
+    table_data = [[length, time] for length, time in zip(array_len, times)]
+    table = ax.table(cellText=table_data, colLabels=['Array Length', 'Times'], loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.2, 1.2) 
+    ax.axis('off')
+    plt.show()
+
+    #plt.figure(figsize=(9, 6))
     plt.plot(array_len, times, 'o-')
     plt.xlabel("Array's lenght")
     plt.ylabel("Time (s)")
+    plt.title(algorithm)
     plt.show()
 
 
-ARRAY_LENGTH = 0
+algorithms = ["bubble_sort", "insertion_sort", "merge_sort", "quicksort"]
+arrays, array_len = [], []
 
 if __name__ == "__main__":
-   
-    for i in range(0, 10):
-        ARRAY_LENGTH += 100
-        array_len = []
-        array_len.append(ARRAY_LENGTH)
+    # Creating different size arrays
+    for ARRAY_LENGTH in range(100, 1001, 100):
         array = [randint(-1000, 1000) for j in range(ARRAY_LENGTH)]
-        # print(ARRAY_LENGTH)
-        # print(array)
+        arrays.append(array)
+        array_len.append(ARRAY_LENGTH)
 
-        run_sorting_algorithm(algorithm="insertion_sort", array=array)
-        run_sorting_algorithm(algorithm="merge_sort", array=array)
-        run_sorting_algorithm(algorithm="quicksort", array=array)
- 
-    # Call the function using the name of the sorting algorithm
-    # and the array you just created
-    #run_sorting_algorithm(algorithm="sorted", array=array)
-    #run_sorting_algorithm(algorithm="bubble_sort", array=array)
-    # run_sorting_algorithm(algorithm="insertion_sort", array=array)
-    # run_sorting_algorithm(algorithm="merge_sort", array=array)
-    # run_sorting_algorithm(algorithm="quicksort", array=array)
-    # run_sorting_algorithm(algorithm="timsort", array=array)
+    # Tesing each algorithm with each array created previoslly
+    for algorithm in algorithms:
+        execution_times = []
+        for array in arrays:
+            execution_time = run_sorting_algorithm(algorithm=algorithm, array=array)
+            execution_times.append(execution_time)
+        plot(times=execution_times, array_len=array_len, algorithm=algorithm)
