@@ -1,9 +1,10 @@
 from random import randint
 from timeit import repeat
 from matplotlib import pyplot as plt
-import numpy as np
 
-
+'''
+Sorting Algorithms:
+'''
 def bubble_sort(array):
     n = len(array)
 
@@ -120,7 +121,7 @@ def merge_sort(array):
         left=merge_sort(array[:midpoint]),
         right=merge_sort(array[midpoint:]))
 
-def quicksort(array):
+def quick_sort(array):
     # If the input array contains fewer than two elements,
     # then return it as the result of the function
     if len(array) < 2:
@@ -145,9 +146,54 @@ def quicksort(array):
 
     # The final result combines the sorted `low` list
     # with the `same` list and the sorted `high` list
-    return quicksort(low) + same + quicksort(high)
+    return quick_sort(low) + same + quick_sort(high)
 
-def timsort(array):
+
+def heap_sort(array):
+    def heapify(array, N, i):
+        largest = i  # Initialize largest as root
+        l = 2 * i + 1  # left = 2*i + 1
+        r = 2 * i + 2  # right = 2*i + 2
+
+        # See if left child of root exists and is
+        # greater than root
+        if l < N and array[largest] < array[l]:
+            largest = l
+
+        # See if right child of root exists and is
+        # greater than root
+        if r < N and array[largest] < array[r]:
+            largest = r
+
+        # Change root, if needed
+        if largest != i:
+            array[i], array[largest] = array[largest], array[i]  # swap
+
+            # Heapify the root.
+            heapify(array, N, largest)
+
+    N = len(array)
+    # Build a maxheap.
+    for i in range(N // 2 - 1, -1, -1):
+        heapify(array, N, i)
+    # One by one extract elements
+    for i in range(N - 1, 0, -1):
+        array[i], array[0] = array[0], array[i]  # swap
+        heapify(array, i, 0)
+    return array
+
+def tim_sort(array):
+    def insertion_sort_modified(array, left=0, right=None):
+        if right is None:
+            right = len(array) - 1
+        for i in range(left + 1, right + 1):
+            key_item = array[i]
+            j = i - 1
+            while j >= left and array[j] > key_item:
+                array[j + 1] = array[j]
+                j -= 1
+            array[j + 1] = key_item
+        return array
     min_run = 32
     n = len(array)
 
@@ -155,7 +201,7 @@ def timsort(array):
     # input array. The size of these slices is defined by
     # your `min_run` size.
     for i in range(0, n, min_run):
-        insertion_sort(array, i, min((i + min_run - 1), n - 1))
+        insertion_sort_modified(array, i, min((i + min_run - 1), n - 1))
 
     # Now you can start merging the sorted slices.
     # Start from `min_run`, doubling the size on
@@ -186,9 +232,11 @@ def timsort(array):
 
         # Each iteration should double the size of your arrays
         size *= 2
-
     return array
 
+'''
+Functions to record time and plot data:
+'''
 def run_sorting_algorithm(algorithm, array):
     # Set up the context and prepare the call to the specified
     # algorithm using the supplied array. Only import the
@@ -211,38 +259,50 @@ def run_sorting_algorithm(algorithm, array):
     return final_time
     
 def plot(times, array_len, algorithm):
-
     fig, ax = plt.subplots()
     table_data = [[length, time] for length, time in zip(array_len, times)]
-    table = ax.table(cellText=table_data, colLabels=['Array Length', 'Times'], loc='center')
+    table = ax.table(cellText=table_data, colLabels=['Array Length', 'Time'], loc='center', cellLoc='center')
+    ax.set_title(f'Time results of {algorithm} algorithm')
     table.auto_set_font_size(False)
     table.set_fontsize(10)
-    table.scale(1.2, 1.2) 
+    table.scale(1.1, 1.1) 
     ax.axis('off')
     plt.show()
 
-    #plt.figure(figsize=(9, 6))
-    plt.plot(array_len, times, 'o-')
-    plt.xlabel("Array's lenght")
-    plt.ylabel("Time (s)")
-    plt.title(algorithm)
+    plt.plot(array_len, times)
+    plt.xlabel("array lenght")
+    plt.ylabel("soring time (s)")
+    plt.title(f'{algorithm} algorithm')
+    plt.grid('on')
     plt.show()
 
 
-algorithms = ["bubble_sort", "insertion_sort", "merge_sort", "quicksort"]
-arrays, array_len = [], []
+'''
+Emperical Analysis of sorting algorithms
+'''
+
+algorithms = ["bubble_sort", "insertion_sort", "merge_sort", "quick_sort", "heap_sort", "tim_sort"]
+arrays_lengths = [100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000]
+arrays_lengths_2 = [100, 1000, 2000, 3000, 4000, 5000] #array lenghts for bubble & insertion sort only
 
 if __name__ == "__main__":
     # Creating different size arrays
-    for ARRAY_LENGTH in range(100, 1001, 100):
+    arrays = []
+    for ARRAY_LENGTH in arrays_lengths:
         array = [randint(-1000, 1000) for j in range(ARRAY_LENGTH)]
         arrays.append(array)
-        array_len.append(ARRAY_LENGTH)
 
     # Tesing each algorithm with each array created previoslly
     for algorithm in algorithms:
         execution_times = []
+
         for array in arrays:
+            if (len(array) > arrays_lengths_2[-1]) and (algorithm == "bubble_sort" or algorithm == "insertion_sort"): 
+                break
             execution_time = run_sorting_algorithm(algorithm=algorithm, array=array)
             execution_times.append(execution_time)
-        plot(times=execution_times, array_len=array_len, algorithm=algorithm)
+
+        if algorithm == "bubble_sort" or algorithm == "insertion_sort":
+            plot(times=execution_times, array_len=arrays_lengths_2, algorithm=algorithm)
+        else:
+            plot(times=execution_times, array_len=arrays_lengths, algorithm=algorithm)
