@@ -246,13 +246,13 @@ def run_sorting_algorithm(algorithm, array):
 
     # Execute the code ten different times and return the time
     # in seconds that each execution took
-    times = repeat(setup=setup_code, stmt=stmt, repeat=3, number=10)
+    times = repeat(setup=setup_code, stmt=stmt, repeat=1, number=10)
 
     # Finally, display the name of the algorithm and the
     # minimum time it took to run
     final_time = round(min(times), 6)
 
-    print(f"Algorithm: {algorithm}. Array lenght: {len(array)}. Minimum execution time: {final_time} sec")
+    print(f"Algorithm: {algorithm}. Array length: {len(array)}. Minimum execution time: {final_time} sec")
     print("")
     return final_time
     
@@ -270,7 +270,7 @@ def plot(times, array_len, algorithm):
 
     #plot graph
     plt.plot(array_len, times)
-    plt.xlabel("array lenght")
+    plt.xlabel("array length")
     plt.ylabel("soring time (s)")
     plt.title(f'{algorithm} algorithm')
     plt.grid('on')
@@ -278,7 +278,7 @@ def plot(times, array_len, algorithm):
 
 
 '''
-Emperical Analysis of sorting algorithms
+Empirical Analysis of sorting algorithms
 '''
 algorithms = ["bubble_sort", "insertion_sort", "merge_sort", "quick_sort", "heap_sort", "tim_sort"]
 arrays_lengths = [100, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000]
