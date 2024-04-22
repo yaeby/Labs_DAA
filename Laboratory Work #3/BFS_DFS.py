@@ -39,7 +39,7 @@ dfs_times = []
 graph_sizes = []
 
 # Perform empirical analysis
-for i in range(10, 10001, 10):  # Generate graphs with nodes from 10 to 100 in steps of 10
+for i in range(10, 1001, 10):  # Generate graphs with nodes from 10 to 100 in steps of 10
     graph = generate_random_graph(i, i*2)
     graph_sizes.append(i)
 
